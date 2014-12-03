@@ -13,9 +13,9 @@ module Fluent
         end
 
         def emit(tag, es, chain)
-            record = set_encoding(record) if @force_encoding
             es.each {|time,record|
                 chain.next
+                record = set_encoding(record) if @force_encoding
                 bucket = {@json_key => record.to_json}
                 Fluent::Engine.emit(@output_tag, time, bucket)
             }
@@ -24,7 +24,7 @@ module Fluent
         def set_encoding(record)
           record.each_pair { |k, v|
             if v.is_a?(String)
-              v.force_encoding(@char_encoding)
+              v.force_encoding(@force_encoding)
             end
           }
         end
